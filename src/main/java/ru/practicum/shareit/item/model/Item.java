@@ -6,9 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

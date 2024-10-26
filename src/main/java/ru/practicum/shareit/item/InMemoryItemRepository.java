@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public class InMemoryItemRepository {
 
-    HashMap<Long, Item> items = new HashMap<>();
+    private final HashMap<Long, Item> items = new HashMap<>();
     private static long nextId = 1;
 
     public static Long generateId() {
