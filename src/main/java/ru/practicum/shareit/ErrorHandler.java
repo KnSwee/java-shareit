@@ -45,4 +45,11 @@ public class ErrorHandler {
         log.error("Ошибка при создании или изменении объекта. %s".formatted(e.getMessage()), e);
         return new ErrorResponse("Ошибка при создании или изменении объекта.", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnprocessedException(final Exception e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse("internal server error.", e.getMessage());
+    }
 }

@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
@@ -92,6 +93,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemWithBookingDateAndCommentsDto> findAllUserItems(long ownerId) {
         Map<Long, Item> itemsDto = itemRepository.findAllByOwnerId(ownerId)
                 .stream()
@@ -117,6 +119,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> getItemsToBook(String text) {
         if (text.isBlank()) {
             return new ArrayList<>();
@@ -139,11 +142,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByItemId(long itemId) {
         return CommentDtoMapper.toDto(commentRepository.findByItemId(itemId));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentDto> getCommentsByOwnerId(long ownerId) {
         return commentRepository.getCommentsByOwnerId(ownerId).stream()
                 .filter(Objects::nonNull)

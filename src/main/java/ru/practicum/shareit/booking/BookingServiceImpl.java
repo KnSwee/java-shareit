@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoMapper;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
@@ -62,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingDto getBookingById(Long userId, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ExistingDataException("Бронирования с таким id не существует."));
@@ -73,6 +76,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getBookingsByUserId(Long userId, State state) {
 
         return BookingDtoMapper.toBookingDto(
@@ -80,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getBookingsByOwnerId(Long ownerId, State state) {
         if (!itemRepository.existsByOwnerId(ownerId)) {
             throw new NotFoundException("Этот запрос имеет смысл для владельца хотя бы одной вещи.");

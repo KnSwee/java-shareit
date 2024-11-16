@@ -3,15 +3,18 @@ package ru.practicum.shareit.user;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ExistingDataException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoMapper;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+
 
     @Override
     public UserDto create(UserDto userDto) {
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
         return UserDtoMapper.toUserDto(repository.save(UserDtoMapper.toUser(userDto)));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto get(Long id) {
         return UserDtoMapper.toUserDto(repository.findById(id)
