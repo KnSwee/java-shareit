@@ -1,36 +1,53 @@
 package ru.practicum.shareit.user;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ExistingDataException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoMapper;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final InMemoryUserRepository repository;
+    private final UserRepository repository;
 
     @Override
     public UserDto create(UserDto userDto) {
-        if (repository.emailCheck(userDto.getEmail())) {
+        if (repository.emailExists(userDto.getEmail())) {
             throw new ExistingDataException("Пользователь с таким email уже существует.");
         }
-        return UserDtoMapper.toUserDto(repository.create(UserDtoMapper.toUser(userDto)));
+        if (StringUtils.isBlank(userDto.getName())) {
+            throw new ValidationException("Нельзя создать пользователя без имени.");
+        }
+        if (StringUtils.isBlank(userDto.getEmail())) {
+            throw new ValidationException("Нельзя создать пользователя без email");
+        }
+        return UserDtoMapper.toUserDto(repository.save(UserDtoMapper.toUser(userDto)));
     }
 
     @Override
     public UserDto get(Long id) {
-        return UserDtoMapper.toUserDto(repository.get(id));
+        return UserDtoMapper.toUserDto(repository.findById(id)
+                .orElseThrow(() -> new ExistingDataException("Пользователя с таким id не существует.")));
     }
 
     @Override
     public UserDto update(long id, UserDto userDto) {
-        return UserDtoMapper.toUserDto(repository.update(id, UserDtoMapper.toUser(userDto)));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new ExistingDataException("Пользователя с таким id не существует."));
+        if (StringUtils.isNotBlank(userDto.getName())) {
+            user.setName(userDto.getName());
+        }
+        if (StringUtils.isNotBlank(userDto.getEmail())) {
+            user.setEmail(userDto.getEmail());
+        }
+        return UserDtoMapper.toUserDto(repository.save(user));
     }
 
     @Override
     public void delete(Long id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }
