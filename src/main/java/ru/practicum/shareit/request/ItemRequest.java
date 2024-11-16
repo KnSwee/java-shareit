@@ -1,23 +1,40 @@
 package ru.practicum.shareit.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
 /**
- * TODO Sprint add-item-requests.
+ * Сущность запроса на аренду (создание) вещи {@link Item}
  */
-@Data
+@Table(name = "requests")
+@Entity
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class ItemRequest {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "description")
     private String description;
-    private long userId;
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime created;
+
+    @JoinColumn(name = "requester_id")
+    @OneToOne
+    @ToString.Exclude
+    private User requester;
 }
