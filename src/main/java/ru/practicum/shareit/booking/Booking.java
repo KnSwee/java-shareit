@@ -1,27 +1,48 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
- * TODO Sprint add-bookings.
+ * Сущность бронирования вещи {@link Item}
  */
-@Data
+@Table(name = "bookings")
+@Entity
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class Booking {
 
-    private long id;
-    private LocalDate start;
-    private LocalDate end;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "start_date")
+    private LocalDateTime start;
+
+    @Column(name = "end_date")
+    private LocalDateTime end;
+
+    @JoinColumn(name = "item_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Item item;
-    private long bookerId;
-    private BookingStatus status;
+
+    @JoinColumn(name = "booker_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private User booker;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "status")
+    private BookingStatus status = BookingStatus.WAITING;
 }
