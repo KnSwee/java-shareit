@@ -1,28 +1,33 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.HandleValidator;
 import ru.practicum.shareit.item.dto.CommentCreationDto;
 import ru.practicum.shareit.item.dto.ItemCreationRequestDto;
 import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class ItemController {
 
     private final ItemClient itemClient;
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @Valid @RequestBody ItemCreationRequestDto itemCreateDto) {
+                                         @Validated @RequestBody ItemCreationRequestDto itemCreateDto,
+                                         BindingResult bindingResult) {
         log.info("Creating new item: {}", itemCreateDto);
+        HandleValidator.handle(bindingResult, log);
         return itemClient.addItem(userId, itemCreateDto);
     }
 
@@ -50,6 +55,9 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> getItemsToBook(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @RequestParam("text") String text) {
+        if (text.isBlank()) {
+            return ResponseEntity.of(Optional.of(new ArrayList<>()));
+        }
         log.info("Getting items to book for user {} with text {}", userId, text);
         return itemClient.getItemsToBook(userId, text);
     }

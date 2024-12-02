@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.ShareItServer;
 import ru.practicum.shareit.exception.ExistingDataException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
@@ -88,24 +87,6 @@ public class UserServiceTest {
             userService.create(new UserDto(10L, "user", "test@test.com"));
         } catch (ExistingDataException e) {
             assertThat(e.getMessage(), containsString("Пользователь с таким email уже существует."));
-        }
-    }
-
-    @Test
-    void userCreateNameExceptionTest() {
-        try {
-            userService.create(new UserDto(10L, "", "newtest@test.com"));
-        } catch (ValidationException e) {
-            assertThat(e.getMessage(), containsString("Нельзя создать пользователя без имени."));
-        }
-    }
-
-    @Test
-    void userCreateEmailExceptionTest() {
-        try {
-            userService.create(new UserDto(10L, "user", ""));
-        } catch (ValidationException e) {
-            assertThat(e.getMessage(), containsString("Нельзя создать пользователя без email"));
         }
     }
 

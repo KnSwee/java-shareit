@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.LastOrNextBookingDto;
 import ru.practicum.shareit.exception.ExistingDataException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -47,9 +46,6 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(Long userId, ItemCreateDto itemCreateDto) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователя с переданным айди не существует"));
-        if (StringUtils.isBlank(itemCreateDto.getName())) {
-            throw new ValidationException("Нельзя создать вещь без названия.");
-        }
         Item item = ItemDtoMapper.toItem(itemCreateDto);
         item.setOwner(owner);
         if (itemCreateDto.getRequestId() != null) {
@@ -145,7 +141,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto createComment(Long userId, Long itemId, CommentCreationDto commentCreationDto) {
         if (!bookingRepository.checkBookingExist(itemId, userId)) {
-            throw new ValidationException("Комментарий может быть оставлен только арендатором вещи.");
+            throw new ForbiddenException("Комментарий может быть оставлен только арендатором вещи.");
         }
         Comment comment = new Comment();
         comment.setItem(itemRepository.findById(itemId)

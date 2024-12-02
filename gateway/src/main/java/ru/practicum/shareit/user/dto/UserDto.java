@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class UserDto {
 
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Имя пользователя не должно быть пустым")
     private String name;
-    @NotBlank
+    @NotBlank(message = "email не должен быть пустым")
     @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
-            message = "Электронная почта не может быть пустой и должна содержать символ @")
+            message = "email должен содержать символ @ и домен")
     private String email;
 
 }

@@ -5,14 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.exception.ErrorResponse;
+import ru.practicum.shareit.exception.ExistingDataException;
+import ru.practicum.shareit.exception.ForbiddenException;
+import ru.practicum.shareit.exception.NotFoundException;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleForbiddenException(final ForbiddenException e) {
         log.error("Ошибка при редактировании объекта: недостаточно прав.", e);
         return new ErrorResponse("У вас недостаточно прав для редактирования этой вещи.", e.getMessage());
@@ -30,13 +33,6 @@ public class ErrorHandler {
     public ErrorResponse handleExistingDataException(final ExistingDataException e) {
         log.error("Ошибка при обновлении объекта. Объект с такими данными уже существует.", e);
         return new ErrorResponse("Этот email уже занят.", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationDataException(final ValidationException e) {
-        log.error("Ошибка при создании или изменении объекта. %s".formatted(e.getMessage()), e);
-        return new ErrorResponse("Ошибка при создании или изменении объекта.", e.getMessage());
     }
 
     @ExceptionHandler

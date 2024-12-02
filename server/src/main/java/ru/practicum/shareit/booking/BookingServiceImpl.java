@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.enums.UserType;
 import ru.practicum.shareit.exception.ExistingDataException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
@@ -41,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещи с данным id не существует"));
         if (!item.getAvailable()) {
-            throw new ValidationException("Вещь недоступна для бронирования.");
+            throw new ForbiddenException("Вещь недоступна для бронирования.");
         }
         Booking booking = BookingDtoMapper.toBooking(bookingDto);
         booking.setItem(item);

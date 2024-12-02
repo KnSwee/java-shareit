@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ExistingDataException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoMapper;
 
@@ -20,12 +19,6 @@ public class UserServiceImpl implements UserService {
     public UserDto create(UserDto userDto) {
         if (repository.emailExists(userDto.getEmail())) {
             throw new ExistingDataException("Пользователь с таким email уже существует.");
-        }
-        if (StringUtils.isBlank(userDto.getName())) {
-            throw new ValidationException("Нельзя создать пользователя без имени.");
-        }
-        if (StringUtils.isBlank(userDto.getEmail())) {
-            throw new ValidationException("Нельзя создать пользователя без email");
         }
         return UserDtoMapper.toUserDto(repository.save(UserDtoMapper.toUser(userDto)));
     }
